@@ -21,7 +21,6 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerDateModel;
-import javax.swing.border.EmptyBorder;
 
 /**
  * todo.
@@ -215,6 +214,8 @@ public class EditEventDialog {
 
         emitEditEvent(property,event.getSubject(),event.getStartDateTime(),
             event.getEndDateTime(),newValue,scopeString);
+
+        dialog.dispose();
 
       } catch (Exception ex) {
         JOptionPane.showMessageDialog(dialog, "Failed to edit event: " + ex.getMessage(),

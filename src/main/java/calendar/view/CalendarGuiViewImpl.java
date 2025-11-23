@@ -127,8 +127,10 @@ public class CalendarGuiViewImpl extends JFrame implements CalendarGuiView {
 
   @Override
   public void setMonthEvents(LocalDate month, Map<LocalDate, List<ViewEvent>> events) {
-    // Use the topPanel's current month for fresh state comparison
-    if (topPanel.getCurrentMonth().equals(month)) {
+    // Update month view when the year/month match (ignore day-of-month differences)
+    LocalDate topMonth = topPanel.getCurrentMonth();
+    if (topMonth != null && topMonth.getYear() == month.getYear()
+        && topMonth.getMonth() == month.getMonth()) {
       this.currentMonthEvents = events;
       monthViewPanel.updateMonthView(month, events);
       monthViewPanel.updateSelectedDate(getSelectedDate());

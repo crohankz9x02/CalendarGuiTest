@@ -154,6 +154,7 @@ public class CreateCalendarDialog implements ActionListener {
         emitCreateCalendar(name, timezone);
         this.dialog.dispose();
         emitRefresh();
+        dialog.dispose();
         break;
       case "save":
         String property = Objects.requireNonNull(propertyCombo.getSelectedItem()).toString();
@@ -170,6 +171,7 @@ public class CreateCalendarDialog implements ActionListener {
         }
         emitEditCalendar(property, newValue);
         emitRefresh();
+        dialog.dispose();
         break;
       case "cancel":
         this.dialog.dispose();

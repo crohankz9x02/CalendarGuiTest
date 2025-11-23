@@ -62,6 +62,8 @@ public class MonthViewPanel extends JPanel {
   public void updateMonthView(LocalDate month, Map<LocalDate, List<ViewEvent>> events) {
     this.currentMonth = month;
     this.currentMonthEvents = events;
+    // debug: log incoming events map size
+    System.out.println("[MonthViewPanel] updateMonthView for " + month + " with " + events.size() + " date entries");
     refreshMonthView();
   }
 
@@ -95,6 +97,17 @@ public class MonthViewPanel extends JPanel {
 
     int noOfDaysInMonth = this.currentMonth.lengthOfMonth();
     Color calendarColor = currentCalendarColor;
+
+    // debug: iterate events map and print counts for dates within this month
+    if (currentMonthEvents != null) {
+      for (int d = 1; d <= noOfDaysInMonth; d++) {
+        LocalDate date = currentMonth.withDayOfMonth(d);
+        List<ViewEvent> evs = currentMonthEvents.getOrDefault(date, new ArrayList<>());
+        if (!evs.isEmpty()) {
+          System.out.println("[MonthViewPanel] date=" + date + " events=" + evs.size());
+        }
+      }
+    }
 
     for (int day = 1; day <= noOfDaysInMonth; day++) {
       LocalDate date = currentMonth.withDayOfMonth(day);

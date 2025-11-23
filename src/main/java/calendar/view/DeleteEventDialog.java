@@ -1,0 +1,161 @@
+package calendar.view;
+
+import calendar.controller.guicontroller.ViewListener;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
+public class DeleteEventDialog {
+
+  private JComboBox<String> scopeCombo;
+  private final List<ViewListener> listeners;
+  private JDialog dialog;
+
+  private static final java.time.format.DateTimeFormatter TIME_FORMAT =
+      java.time.format.DateTimeFormatter.ofPattern("HH:mm");
+
+  public  DeleteEventDialog(List<ViewListener> listeners) {
+    this.listeners = listeners;
+  }
+
+  public void showDeleteEventSelectionDialog(JFrame parent, LocalDate selectedDate
+      ,List<ViewEvent> events) {
+
+
+
+    if (events.isEmpty()) {
+      JOptionPane.showMessageDialog(parent, "No events on selected date", "Error",
+          javax.swing.JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+
+
+    String[] eventStrings = new String[events.size()];
+    for (int i = 0; i < events.size(); i++) {
+      ViewEvent event = events.get(i);
+      String timeStr = event.isAllDay() ? "All Day"
+          : event.getStartDateTime().toLocalTime().format(TIME_FORMAT);
+      eventStrings[i] = timeStr + " - " + event.getSubject();
+    }
+
+
+
+    JDialog dialog = new JDialog(parent, "Select Event", true);
+    dialog.setLayout(new BorderLayout());
+    dialog.setSize(400, 150);
+    dialog.setLocationRelativeTo(parent);
+
+    JPanel centerPanel = new JPanel(new BorderLayout());
+    centerPanel.add(new JLabel("Select event to Delete:"), BorderLayout.NORTH);
+
+    JComboBox<String> comboBox = new JComboBox<>(eventStrings);
+    centerPanel.add(comboBox, BorderLayout.CENTER);
+
+    dialog.add(centerPanel, BorderLayout.CENTER);
+
+
+    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+    JButton okButton = new JButton("OK");
+    JButton cancelButton = new JButton("Cancel");
+
+    buttonPanel.add(okButton);
+    buttonPanel.add(cancelButton);
+    dialog.add(buttonPanel, BorderLayout.SOUTH);
+
+
+    okButton.addActionListener(e -> {
+      int index = comboBox.getSelectedIndex();
+      String scope = (String) comboBox.getSelectedItem();
+      if (index >= 0) {
+        ViewEvent selectedEvent = events.get(index);
+        dialog.dispose();
+        emitDeleteEvent(selectedEvent.getSubject(),selectedEvent.getStartDateTime(),
+            selectedEvent.getEndDateTime(),scope);
+      } else {
+        JOptionPane.showMessageDialog(parent, "No event selected", "Error",
+            JOptionPane.ERROR_MESSAGE);
+      }
+    });
+
+
+    cancelButton.addActionListener(e -> dialog.dispose());
+
+    dialog.setVisible(true);
+  }
+
+
+
+
+
+
+//  public void showDeleteEventDialog(JFrame parent, ViewEvent event) {
+//    dialog = new JDialog(parent, "Delete Event", true);
+//    dialog.setSize(400, 250);
+//    dialog.setLayout(new BorderLayout());
+//
+//    JPanel panel = new JPanel();
+//    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+//    panel.setBorder(new EmptyBorder(20, 20, 20, 20));
+//
+//    panel.add(new JLabel("Event: " + event.getSubject()));
+//    panel.add(new JLabel("Date: " + event.getStartDateTime().toLocalDate().toString()));
+//    panel.add(new JLabel("From: " + event.getStartDateTime().toLocalTime().toString()));
+//    panel.add(new JLabel("To: " + event.getEndDateTime().toLocalTime().toString()));
+//
+//    if (event.isSeries()) {
+//      panel.add(new JLabel("Delete Scope:"));
+//      scopeCombo = new JComboBox<>(new String[]
+//          {"Only this event", "All events from this event", "All events in series"});
+//      panel.add(scopeCombo);
+//    }
+//
+//    String scope = (String) scopeCombo.getSelectedItem();
+//
+//    JPanel buttonPanel = new JPanel(new FlowLayout());
+//    JButton deleteButton = new JButton("Delete");
+//    deleteButton.setActionCommand("delete");
+//    deleteButton.addActionListener(e -> {
+//      emitDeleteEvent(event.getSubject(),event.getStartDateTime(),
+//          event.getEndDateTime(),scope);
+//    });
+//    buttonPanel.add(deleteButton);
+//
+//    JButton cancelButton = new JButton("Cancel");
+//    cancelButton.setActionCommand("cancel");
+//    buttonPanel.add(cancelButton);
+//    panel.add(buttonPanel);
+//
+//    dialog.add(panel);
+//    dialog.setLocationRelativeTo(parent);
+//    dialog.setVisible(true);
+//  }
+
+
+  private void emitDeleteEvent(String subject, LocalDateTime startDateTime,
+                               LocalDateTime endDateTime, String scope) {
+    for (ViewListener listener : listeners) {
+      listener.handleDeleteEvent(subject, startDateTime, endDateTime, scope);
+    }
+  }
+
+  private void emitRefresh() {
+    for (ViewListener listener : listeners) {
+      listener.handleRefresh();
+    }
+  }
+}

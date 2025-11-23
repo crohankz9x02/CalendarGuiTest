@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -69,23 +70,14 @@ public class CalendarGuiViewImpl extends JFrame implements CalendarGuiView {
     centerPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
     monthViewPanel = new MonthViewPanel();
-    // Set a simple date selection callback: create an inner class implementing java.util.function.Consumer
-    monthViewPanel.setDateSelectionCallback(new java.util.function.Consumer<LocalDate>() {
-      @Override
-      public void accept(LocalDate date) {
-        // update view state first so view.getSelectedDate() returns the new value
-        monthViewPanel.updateSelectedDate(date);
-        if (bottomPanel != null) {
-          bottomPanel.setSelectedDate(date);
-        }
-        // notify controller via listeners
-        for (ViewListener listener : listeners) {
-          listener.handleDateSelected(date);
-        }
-        // then request a refresh
-        for (ViewListener listener : listeners) {
-          listener.handleRefresh();
-        }
+    monthViewPanel.setDateSelectionCallback(date -> {
+      monthViewPanel.updateSelectedDate(date);
+      bottomPanel.setSelectedDate(date);
+      for (ViewListener listener : listeners) {
+        listener.handleDateSelected(date);
+      }
+      for (ViewListener listener : listeners) {
+        listener.handleRefresh();
       }
     });
 
@@ -127,14 +119,12 @@ public class CalendarGuiViewImpl extends JFrame implements CalendarGuiView {
 
   @Override
   public void setMonthEvents(LocalDate month, Map<LocalDate, List<ViewEvent>> events) {
-    // Update month view when the year/month match (ignore day-of-month differences)
     LocalDate topMonth = topPanel.getCurrentMonth();
     if (topMonth != null && topMonth.getYear() == month.getYear()
         && topMonth.getMonth() == month.getMonth()) {
       this.currentMonthEvents = events;
       monthViewPanel.updateMonthView(month, events);
       monthViewPanel.updateSelectedDate(getSelectedDate());
-      // inform bottom panel about currently selected date
       if (bottomPanel != null) {
         bottomPanel.setSelectedDate(getSelectedDate());
       }
@@ -159,14 +149,11 @@ public class CalendarGuiViewImpl extends JFrame implements CalendarGuiView {
 
   @Override
   public LocalDate getCurrentMonth() {
-    // Delegate to topPanel so we don't return a stale field
     return topPanel.getCurrentMonth();
   }
 
   @Override
   public LocalDate getSelectedDate() {
-    // monthViewPanel keeps selected date state; expose via its method if available,
-    // otherwise return the stored selectedDate field.
     try {
       return monthViewPanel.getSelectedDate();
     } catch (Exception ex) {

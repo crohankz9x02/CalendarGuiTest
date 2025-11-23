@@ -55,12 +55,10 @@ public class CreateEventDialog {
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
     panel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-    // Subject
     panel.add(new JLabel("Subject:"));
     JTextField subjectField = new JTextField(30);
     panel.add(subjectField);
 
-    // Date picker
     panel.add(new JLabel("Date:"));
     SpinnerDateModel dateModel = new SpinnerDateModel(
         Date.from(selectedDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),
@@ -70,20 +68,17 @@ public class CreateEventDialog {
     dateSpinner.setEditor(dateEditor);
     panel.add(dateSpinner);
 
-    // All day checkbox
     JPanel allDayPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
     JCheckBox allDayCheck = new JCheckBox("All Day Event");
     allDayPanel.add(allDayCheck);
     panel.add(allDayPanel);
 
-    // Start time
     panel.add(new JLabel("Start Time:"));
     Calendar startCal = new GregorianCalendar();
     startCal.set(Calendar.HOUR_OF_DAY, 9);
     startCal.set(Calendar.MINUTE, 0);
     startCal.set(Calendar.SECOND, 0);
     startCal.set(Calendar.MILLISECOND, 0);
-
 
     SpinnerDateModel startTimeModel = new SpinnerDateModel(
         startCal.getTime(), null, null, Calendar.HOUR_OF_DAY);
@@ -92,7 +87,6 @@ public class CreateEventDialog {
     startTimeSpinner.setEditor(startTimeEditor);
     panel.add(startTimeSpinner);
 
-    // End time
     panel.add(new JLabel("End Time:"));
     Calendar endCal = new GregorianCalendar();
     endCal.set(Calendar.HOUR_OF_DAY, 10);
@@ -106,7 +100,6 @@ public class CreateEventDialog {
     endTimeSpinner.setEditor(endTimeEditor);
     panel.add(endTimeSpinner);
 
-    // Description
     panel.add(new JLabel("Description:"));
     JTextArea descriptionArea = new JTextArea(3, 30);
     descriptionArea.setLineWrap(true);
@@ -114,24 +107,20 @@ public class CreateEventDialog {
     JScrollPane descScroll = new JScrollPane(descriptionArea);
     panel.add(descScroll);
 
-    // Location
     panel.add(new JLabel("Location:"));
     JComboBox<String> locationCombo = new JComboBox<>(
         new String[]{"UNKNOWN", "PHYSICAL", "ONLINE"});
     panel.add(locationCombo);
 
-    // Status
     panel.add(new JLabel("Status:"));
     JComboBox<String> statusCombo = new JComboBox<>(
         new String[]{"UNKNOWN", "PUBLIC", "PRIVATE"});
     panel.add(statusCombo);
 
-    // Recurring event options
     panel.add(new JLabel("Repeat:"));
     JCheckBox recurringCheck = new JCheckBox("Repeat");
     panel.add(recurringCheck);
 
-    // Day of week checkboxes
     JPanel daysPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
     daysPanel.add(new JLabel("Repeat on:"));
     JCheckBox monCheck = new JCheckBox("Mon");
@@ -151,7 +140,6 @@ public class CreateEventDialog {
     daysPanel.setEnabled(false);
     panel.add(daysPanel);
 
-    // End date for recurring events
     panel.add(new JLabel("End Date (for recurring events):"));
     SpinnerDateModel endDateModel = new SpinnerDateModel(
         Date.from(selectedDate.plusMonths(1).atStartOfDay(ZoneId.systemDefault()).toInstant()),
@@ -162,14 +150,12 @@ public class CreateEventDialog {
     untilDateSpinner.setEnabled(false);
     panel.add(untilDateSpinner);
 
-    // Enable/disable time fields based on all day
     allDayCheck.addActionListener(e -> {
       boolean enabled = !allDayCheck.isSelected();
       startTimeSpinner.setEnabled(enabled);
       endTimeSpinner.setEnabled(enabled);
     });
 
-    // Enable/disable recurring options
     recurringCheck.addActionListener(e -> {
       boolean enabled = recurringCheck.isSelected();
       daysPanel.setEnabled(enabled);
@@ -269,7 +255,6 @@ public class CreateEventDialog {
             return;
           }
 
-          // Get end date from spinner
           Date endDateValue = (Date) untilDateSpinner.getValue();
           repeatEndDate = endDateValue.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         }

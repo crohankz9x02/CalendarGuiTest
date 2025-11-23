@@ -158,7 +158,6 @@ public class CalendarContainerControllerTest {
 
     controller.run();
 
-    System.out.println(out.toString());
     assertTrue(out.toString().contains("Now you are using calendar Work"));
   }
 

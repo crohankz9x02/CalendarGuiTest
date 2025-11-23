@@ -145,7 +145,8 @@ public class BottomPanel extends JPanel {
           events.addAll(res);
         }
       } catch (Exception ex) {
-        // ignore listener errors and continue
+        JOptionPane.showMessageDialog(parent, ex.getMessage(), "Error",
+            JOptionPane.ERROR_MESSAGE);
       }
     }
     return events;

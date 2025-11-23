@@ -36,7 +36,6 @@ public class TopPanel extends JPanel implements ActionListener {
   private final List<ViewListener> listeners;
   private final JFrame parent;
   private final CreateCalendarDialog createDialog;
-  // when true, ignore combo box selection events caused by programmatic updates
   private boolean suppressComboEvents = false;
 
   public TopPanel(JFrame parent, List<ViewListener> listeners) {
@@ -151,7 +150,6 @@ public class TopPanel extends JPanel implements ActionListener {
     if (calendarComboBox == null) {
       return;
     }
-    // avoid handling combo box events while we are updating its contents
     suppressComboEvents = true;
     calendarComboBox.removeAllItems();
     for (String name : calendarNames) {
@@ -201,7 +199,6 @@ public class TopPanel extends JPanel implements ActionListener {
     switch (e.getActionCommand()) {
       case "switch":
         if (suppressComboEvents) {
-          // ignore selection events triggered while updating items
           return;
         }
         Object selObj = calendarComboBox.getSelectedItem();

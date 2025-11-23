@@ -71,7 +71,6 @@ public class CreateCalendarDialog implements ActionListener {
     panel.add(buttonPanel);
     dialog.add(panel);
     dialog.setLocationRelativeTo(parent);
-    // select a default timezone item to avoid null selection on some platforms
     if (timezoneCombo.getItemCount() > 0) {
       timezoneCombo.setSelectedIndex(0);
     }
@@ -195,8 +194,9 @@ public class CreateCalendarDialog implements ActionListener {
     for (ViewListener listener : listeners) {
       try {
         listener.handleCreateCalendar(name, timezone);
-      } catch (Exception ex) {
-        // swallow exceptions from listeners to avoid breaking the dialog flow
+      } catch (Exception e) {
+        JOptionPane.showMessageDialog(dialog, e.getMessage(),
+            "Error", JOptionPane.ERROR_MESSAGE);
       }
     }
   }
@@ -213,5 +213,4 @@ public class CreateCalendarDialog implements ActionListener {
       listener.handleRefresh();
     }
   }
-
 }

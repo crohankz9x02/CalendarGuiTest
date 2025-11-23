@@ -28,21 +28,17 @@ public class DeleteEventDialog {
   private static final java.time.format.DateTimeFormatter TIME_FORMAT =
       java.time.format.DateTimeFormatter.ofPattern("HH:mm");
 
-  public  DeleteEventDialog(List<ViewListener> listeners) {
+  public DeleteEventDialog(List<ViewListener> listeners) {
     this.listeners = listeners;
   }
 
   public void showDeleteEventSelectionDialog(JFrame parent, LocalDate selectedDate
       ,List<ViewEvent> events) {
-
-
-
     if (events.isEmpty()) {
       JOptionPane.showMessageDialog(parent, "No events on selected date", "Error",
           javax.swing.JOptionPane.ERROR_MESSAGE);
       return;
     }
-
 
     String[] eventStrings = new String[events.size()];
     for (int i = 0; i < events.size(); i++) {
@@ -51,8 +47,6 @@ public class DeleteEventDialog {
           : event.getStartDateTime().toLocalTime().format(TIME_FORMAT);
       eventStrings[i] = timeStr + " - " + event.getSubject();
     }
-
-
 
     JDialog dialog = new JDialog(parent, "Select Event", true);
     dialog.setLayout(new BorderLayout());
@@ -97,11 +91,6 @@ public class DeleteEventDialog {
     dialog.setVisible(true);
   }
 
-
-
-
-
-
   public void showDeleteEventDialog(JFrame parent, ViewEvent event) {
     dialog = new JDialog(parent, "Delete Event", true);
     dialog.setSize(400, 250);
@@ -118,24 +107,42 @@ public class DeleteEventDialog {
 
     if (event.isSeries()) {
       panel.add(new JLabel("Choose Delete Scope:"));
-      scopeCombo = new JComboBox<>(new String[]
-          {"Only this event", "All events from this event", "All events in series"});
+      scopeCombo = new JComboBox<>(new String[]{
+          "Only this event",
+          "All events from this event",
+          "All events in series"
+      });
       panel.add(scopeCombo);
     }
 
-    String scope = (String) scopeCombo.getSelectedItem();
-
     JPanel buttonPanel = new JPanel(new FlowLayout());
     JButton deleteButton = new JButton("Delete");
-    deleteButton.setActionCommand("delete");
+
     deleteButton.addActionListener(e -> {
-      emitDeleteEvent(event.getSubject(),event.getStartDateTime(),
-          event.getEndDateTime(),scope);
+      String scope;
+
+      if (event.isSeries()) {
+        Object sel = scopeCombo.getSelectedItem();
+        if (sel == null) {
+          JOptionPane.showMessageDialog(dialog, "Please select delete scope.",
+              "Error", JOptionPane.ERROR_MESSAGE);
+          return;
+        }
+        scope = sel.toString();
+      } else {
+        scope = "Only this event";
+      }
+
+      emitDeleteEvent(event.getSubject(), event.getStartDateTime(),
+          event.getEndDateTime(), scope);
+
+      dialog.dispose();
     });
-    buttonPanel.add(deleteButton);
 
     JButton cancelButton = new JButton("Cancel");
-    cancelButton.setActionCommand("cancel");
+    cancelButton.addActionListener(e -> dialog.dispose());
+
+    buttonPanel.add(deleteButton);
     buttonPanel.add(cancelButton);
     panel.add(buttonPanel);
 
@@ -145,16 +152,11 @@ public class DeleteEventDialog {
   }
 
 
+
   private void emitDeleteEvent(String subject, LocalDateTime startDateTime,
                                LocalDateTime endDateTime, String scope) {
     for (ViewListener listener : listeners) {
       listener.handleDeleteEvent(subject, startDateTime, endDateTime, scope);
-    }
-  }
-
-  private void emitRefresh() {
-    for (ViewListener listener : listeners) {
-      listener.handleRefresh();
     }
   }
 }

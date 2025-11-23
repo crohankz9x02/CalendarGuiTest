@@ -65,11 +65,4 @@ public interface CalendarGuiView extends CalendarView {
    * @return the top panel instance
    */
   TopPanel getTopPanel();
-
-//  /**
-//   * Sets Features for dialogs to query. This is a read-only reference used by dialogs.
-//   *
-//   * @param features the Features implementation
-//   */
-//  void setFeaturesForDialogs(Features features);
 }

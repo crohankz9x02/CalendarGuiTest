@@ -205,6 +205,7 @@ public class CalendarGuiController implements CalendarController, ViewListener {
   public void handleDeleteEvent(String subject, LocalDateTime startDateTime,
                                 LocalDateTime endDateTime, String scope) {
     try {
+      System.out.println("Scope received in controller: " + scope);
       String result = deleteEvent(subject, startDateTime, endDateTime, scope);
       if (isError(result)) {
         view.renderError(result);
@@ -225,12 +226,12 @@ public class CalendarGuiController implements CalendarController, ViewListener {
       }
 
       String result;
-      if ("single".equals(scope)) {
+      if (scope.equals("Only this event")) {
         DeleteEventHandler handler = new DeleteEventHandler(activeCalendar.getCalendar());
         DeleteEventCommandData data = new DeleteEventCommandData(
             subject, startDateTime, endDateTime);
         result = handler.handle(data);
-      } else if ("from".equals(scope)) {
+      } else if (scope.equals("All events from this event")) {
         DeleteMultipleEventsHandler handler = new DeleteMultipleEventsHandler(
             activeCalendar.getCalendar());
         DeleteMultipleEventsCommandData data = new DeleteMultipleEventsCommandData(

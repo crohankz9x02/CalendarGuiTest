@@ -55,6 +55,7 @@ public class DayViewPanel extends JPanel {
     if (currentDayEvents.isEmpty()) {
       sb.append("No events scheduled.");
     } else {
+      currentDayEvents.sort((e1, e2) -> e1.getStartDateTime().compareTo(e2.getStartDateTime()));
       currentDayEvents.forEach(event -> sb.append(formatEvent(event)));
     }
 

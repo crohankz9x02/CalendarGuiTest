@@ -80,12 +80,11 @@ public class DeleteEventDialog {
 
     okButton.addActionListener(e -> {
       int index = comboBox.getSelectedIndex();
-      String scope = (String) comboBox.getSelectedItem();
       if (index >= 0) {
         ViewEvent selectedEvent = events.get(index);
+        showDeleteEventDialog(parent, selectedEvent);
         dialog.dispose();
-        emitDeleteEvent(selectedEvent.getSubject(),selectedEvent.getStartDateTime(),
-            selectedEvent.getEndDateTime(),scope);
+
       } else {
         JOptionPane.showMessageDialog(parent, "No event selected", "Error",
             JOptionPane.ERROR_MESSAGE);
@@ -103,47 +102,47 @@ public class DeleteEventDialog {
 
 
 
-//  public void showDeleteEventDialog(JFrame parent, ViewEvent event) {
-//    dialog = new JDialog(parent, "Delete Event", true);
-//    dialog.setSize(400, 250);
-//    dialog.setLayout(new BorderLayout());
-//
-//    JPanel panel = new JPanel();
-//    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-//    panel.setBorder(new EmptyBorder(20, 20, 20, 20));
-//
-//    panel.add(new JLabel("Event: " + event.getSubject()));
-//    panel.add(new JLabel("Date: " + event.getStartDateTime().toLocalDate().toString()));
-//    panel.add(new JLabel("From: " + event.getStartDateTime().toLocalTime().toString()));
-//    panel.add(new JLabel("To: " + event.getEndDateTime().toLocalTime().toString()));
-//
-//    if (event.isSeries()) {
-//      panel.add(new JLabel("Delete Scope:"));
-//      scopeCombo = new JComboBox<>(new String[]
-//          {"Only this event", "All events from this event", "All events in series"});
-//      panel.add(scopeCombo);
-//    }
-//
-//    String scope = (String) scopeCombo.getSelectedItem();
-//
-//    JPanel buttonPanel = new JPanel(new FlowLayout());
-//    JButton deleteButton = new JButton("Delete");
-//    deleteButton.setActionCommand("delete");
-//    deleteButton.addActionListener(e -> {
-//      emitDeleteEvent(event.getSubject(),event.getStartDateTime(),
-//          event.getEndDateTime(),scope);
-//    });
-//    buttonPanel.add(deleteButton);
-//
-//    JButton cancelButton = new JButton("Cancel");
-//    cancelButton.setActionCommand("cancel");
-//    buttonPanel.add(cancelButton);
-//    panel.add(buttonPanel);
-//
-//    dialog.add(panel);
-//    dialog.setLocationRelativeTo(parent);
-//    dialog.setVisible(true);
-//  }
+  public void showDeleteEventDialog(JFrame parent, ViewEvent event) {
+    dialog = new JDialog(parent, "Delete Event", true);
+    dialog.setSize(400, 250);
+    dialog.setLayout(new BorderLayout());
+
+    JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    panel.setBorder(new EmptyBorder(20, 20, 20, 20));
+
+    panel.add(new JLabel("Event: " + event.getSubject()));
+    panel.add(new JLabel("Date: " + event.getStartDateTime().toLocalDate().toString()));
+    panel.add(new JLabel("From: " + event.getStartDateTime().toLocalTime().toString()));
+    panel.add(new JLabel("To: " + event.getEndDateTime().toLocalTime().toString()));
+
+    if (event.isSeries()) {
+      panel.add(new JLabel("Choose Delete Scope:"));
+      scopeCombo = new JComboBox<>(new String[]
+          {"Only this event", "All events from this event", "All events in series"});
+      panel.add(scopeCombo);
+    }
+
+    String scope = (String) scopeCombo.getSelectedItem();
+
+    JPanel buttonPanel = new JPanel(new FlowLayout());
+    JButton deleteButton = new JButton("Delete");
+    deleteButton.setActionCommand("delete");
+    deleteButton.addActionListener(e -> {
+      emitDeleteEvent(event.getSubject(),event.getStartDateTime(),
+          event.getEndDateTime(),scope);
+    });
+    buttonPanel.add(deleteButton);
+
+    JButton cancelButton = new JButton("Cancel");
+    cancelButton.setActionCommand("cancel");
+    buttonPanel.add(cancelButton);
+    panel.add(buttonPanel);
+
+    dialog.add(panel);
+    dialog.setLocationRelativeTo(parent);
+    dialog.setVisible(true);
+  }
 
 
   private void emitDeleteEvent(String subject, LocalDateTime startDateTime,

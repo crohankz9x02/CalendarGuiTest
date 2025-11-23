@@ -276,7 +276,7 @@ public class CreateEventDialog {
 
 
         emitCreateEvent(subjectText, startDateTime, endDateTime, description,
-            location, status, allDay, repeatDays, repeatEndDate);
+            location, status, isRepeating, repeatDays, repeatEndDate);
 
         dialog.dispose();
 
